@@ -1,0 +1,62 @@
+#!/usr/bin/env bash 
+# script to launch MdServ
+
+echo "Please check runtime env first ... "
+echo "build and tested on: "
+echo "    Ubuntu Linux 4.15.0-38-generic x86_64 os"
+
+echo "command:  uname -srp"
+OS_ENV=`uname -srp`
+KEY="x86_64"
+
+APP_DIR=`dirname $0`
+APP_DIR=`cd "$APP_DIR";pwd`
+
+if echo "$OS_ENV" | grep -q "$KEY"; then
+  echo "matched";
+
+  gm_user=$APP_DIR/gm_user.json
+  JQ=$APP_DIR/usr/bin/jq
+  username=`cat $gm_user | $JQ ".username"`
+  password=`cat $gm_user | $JQ ".password"`
+  user_id=`curl -s --header "Content-Type: application/json" --request POST  --data "{\"username\": \"$username\", \"password\": \"$password\"}" http://sso.wajinzi.me/api/v3/login/ | $JQ ".user_id"`
+  #echo "$user_id" 
+  if [ "null" = "${user_id// }" ]; then
+     echo "Not a valid user, please contact via QQ: 17626852, http://www.myquant.cn"
+     exit 0
+  fi
+
+  echo "extract python demo and whl file for python3.6 ..."
+  cp -r $APP_DIR/python  ./
+  
+  #echo "copy demo source ..."
+  #cp $APP_DIR/usr/bin/demo.cc ./ 
+
+  echo "files copied, you can check them now with ctrl + c."
+  echo "demo strategy will start after 10 seconds"
+  sleep 10
+  echo "start demo strategy ......, you can interrupt it by ctrl+c"
+  echo "and you can check log file with 'tail -f logs/opt_log.log'"
+else
+  echo "runtime not match";
+  exit 0
+fi
+
+export LD_LIBRARY_PATH=$APP_DIR/usr/lib/:$APP_DIR:$LD_LIBRARY_PATH
+export PATH=$APP_DIR/usr/bin:$PATH
+
+if [ ! -f ./setting.json ]; then
+ cp -f $APP_DIR/json/*.json ./
+ mkdir -p logs
+
+ echo "install python sdk, this need your root permission..."
+ sudo -H pip3.6 uninstall gmsdk
+ sudo -H pip3.6 install ./python/gmsdk-*-cp36-cp36m-linux_x86_64.whl
+ ln -s ./python/test.py test.py
+ ln -s ./python/riskcontrol.py riskcontrol.py
+fi
+
+echo "start demo in 5 seconds, you can cancel this by ctrl + c"
+sleep 5
+exec "$APP_DIR/usr/bin/demo"
+

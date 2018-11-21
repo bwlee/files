@@ -1,0 +1,35 @@
+{
+	"mdsock": {
+                "pub_url": "tcp://127.0.0.1:8888",
+                "sub_url": "tcp://127.0.0.1:8888",
+                "req_url": "tcp://127.0.0.1:8889",
+		"client": "name1"
+	},
+	"md": {
+		"broker_id": "9999",
+		"user_id": "039348",
+		"password": "123456",
+		"front_uri": "tcp://180.168.146.187:10010",
+		"flow_file": "./mdflow"
+	},
+	"td": {
+		"front_uri": "tcp://180.168.146.187:10001",
+		"broker_id": "9999",
+		"user_id": "039348",
+		"password": "123456",
+		"authenticate_required": false,
+		"settle_confirm": true,
+		"flow_file": "./tdflow",
+		"error_count_threshold": 200
+	},
+	"bargen": {
+		"extra_timeout_ms": 50,
+		"require_ongoing_bar": false,
+		"max_bar_length": 1000
+	},
+	"client": {
+		"client_type": "speculation",
+		"product_info": "",
+		"auth_code": ""
+	}
+}

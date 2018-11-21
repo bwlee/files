@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=MdServ
+Exec=mdserv
+Icon=mdserv
+Type=Application
+Categories=Utility;
+Terminal=true
